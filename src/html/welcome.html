@@ -1,0 +1,134 @@
+<!-- =================================================== -->
+<!--      محتويات ملف welcome.html بالتصميم النهائي       -->
+<!-- =================================================== -->
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+        :root {
+            --welcome-width: 400px;
+            --welcome-height: 122px;
+        }
+
+        html, body { 
+            background: rgba(0,0,0,0) !important; 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        .container { 
+            width: calc(var(--welcome-width) - 2px); 
+            height: calc(var(--welcome-height) - 2px); 
+            position: absolute; 
+            top: 1px; 
+            left: 1px; 
+            background: linear-gradient(135deg, #1e293b, #334155); 
+            color: #e2e8f0;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            /* **تم إرجاع الحواف المنحنية بالكامل** */
+            border-radius: 60px; 
+            animation: slideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1), fadeOut 0.6s ease-in 9.4s forwards; 
+            -webkit-app-region: no-drag;
+            backdrop-filter: blur(12px);
+        }
+        
+        .welcome-text {
+            margin: 0; 
+            text-align: center; 
+            line-height: 1.4;
+            font-size: 1.1em;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        
+        /* لون "WELCOME" و "TO PANDA TOOL BOX" */
+        .welcome-message {
+            color: #7dd3fc; 
+            font-weight: 600;
+        }
+        
+        /* لون اسم المستخدم */
+        .user-name {
+            color: #ffffff;
+            font-weight: 700;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+            margin: 0 6px;
+        }
+        
+        .progress-bar { 
+            position: absolute; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 5px; 
+            background: linear-gradient(90deg, #3b82f6, #7dd3fc);
+            animation: shrink 10s linear forwards; 
+            /* **تعديل الحواف السفلية لتطابق الشكل الجديد** */
+            border-bottom-left-radius: 60px; 
+            border-bottom-right-radius: 60px;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.4);
+        }
+        
+        @keyframes slideDown { 
+            from { opacity: 0; transform: translateY(-30px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        @keyframes fadeOut { 
+            from { opacity: 1; transform: translateY(0); } 
+            to { opacity: 0; transform: translateY(-30px); } 
+        }
+        
+        @keyframes shrink { 
+            from { width: 100%; } 
+            to { width: 0%; } 
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); text-shadow: 0 0 8px rgba(255, 255, 255, 0.3); }
+            50% { transform: scale(1.03); text-shadow: 0 0 16px rgba(255, 255, 255, 0.5); }
+        }
+        
+        .panda-emoji {
+            display: inline-block;
+            animation: bounce 1.5s ease-in-out infinite;
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+<!-- في ملف welcome.html -->
+<h2 class="welcome-text">
+    <span class="panda-emoji">🐼</span>
+    <span class="welcome-message">Welcome</span>
+    <!-- أضفنا نصًا افتراضيًا هنا -->
+    <span class="user-name" id="user-name-placeholder">USER</span> 
+    <span class="welcome-message">To Panda-Toolbox</span>
+</h2>
+
+        <div class="progress-bar"></div>
+    </div>
+    <script>
+        const { ipcRenderer } = require('electron');
+        ipcRenderer.on('set-user-name', (event, userName) => {
+            const placeholder = document.getElementById('user-name-placeholder');
+            if (placeholder) {
+                placeholder.textContent = userName.toUpperCase();
+            }
+        });
+    </script>
+</body>
+</html>

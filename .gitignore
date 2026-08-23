@@ -1,0 +1,11 @@
+# الـ Environment Variables (التوكنز الحساسة)
+.env
+
+# مجلدات نود جي إس وأدوات البناء
+node_modules/
+dist/
+build/
+
+# ملفات النظام المؤقتة
+.DS_Store
+Thumbs.db

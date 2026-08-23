@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>Panda-Toolbox</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+<style>
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+    <!-- Custom Title Bar -->
+    <div id="custom-title-bar">
+        <div class="title-bar-drag-area">
+            <div class="app-logo">
+                <img src="../sound-image/icon.png" alt="Logo">
+            </div>
+            <div class="app-title">Panda-Toolbox</div>
+        </div>
+        <div class="title-bar-controls">
+            <button id="minimize-btn" class="control-btn" onclick="window.electronAPI.minimizeWindow()">
+                <i class="fas fa-minus"></i>
+            </button>
+            <button id="close-btn" class="control-btn close" onclick="window.electronAPI.closeWindow()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    
+ 
+ <div id="login-screen">
+    <div class="login-container">
+
+      <!-- العنوان -->
+      <div class="login-header">
+        <div class="line left"></div>
+        <div class="title">
+          <img src="../sound-image/icon.png" alt="Panda Icon">
+          <h2>Panda-Toolbox</h2>
+        </div>
+        <div class="line right"></div>
+      </div>
+
+      <!-- الرسالة -->
+      <p id="login-message"></p>
+
+      <!-- ملاحظة -->
+      <p 
+      class="note">
+        <i class="fas fa-info-circle"></i>
+        <span>يمكنك الضغط على تسجيل الدخول مباشرة إذا قمت بحفظ بيانات الدخول.</span>
+    </p>
+
+      <!-- HWID -->
+      <div class="hwid-box">
+        <div class="hwid-info">
+          <div class="label">
+            <i class="fas fa-microchip"></i>
+            <span>HWID :</span>
+          </div>
+          <div id="hwid-value">Loading...</div>
+        </div>
+        <div class="divider"></div>
+
+            <button id="copy-hwid-btn">
+                <i class="fas fa-copy"></i>
+                <span style="font-size: 12px; font-weight: bold;">نسخ</span>
+            </button>
+      </div>
+
+      <!-- إدخال الترخيص -->
+      <div class="input-box">
+        <input type="text" id="license-key-input" placeholder="أدخل مفتاح الترخيص هنا">
+        <div class="icon">🔑</div>
+      </div>
+
+      <!-- تذكرني -->
+<div class="remember-me">
+  <span class="arrow-hint">➤</span>
+  <input type="checkbox" id="remember-me-checkbox">
+  <label for="remember-me-checkbox">حفظ بيانات الدخول</label>
+</div>
+
+
+      <!-- زر الدخول -->
+      <button id="login-button"><i class="fas fa-sign-in-alt"></i><span>تسجيل الدخول</span></button>
+      <button id="buy-key-login" onclick="window.electronAPI.openPaymentWindow()" style="background: linear-gradient(135deg, #ffb400, #ff8c00); margin-top: 10px; width: 100%; padding: 12px; border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer;"><i class="fas fa-shopping-cart"></i> شراء مفتاح (Buy Key)</button>
+
+      <div class="separator"></div>
+
+      <!-- السوشيال -->
+      <div class="social-buttons">
+        <button class="discord-btn" onclick="window.electronAPI.openExternalLink('https://discord.gg/jDnKNUawjM')"><i class="fab fa-discord"></i></button>
+        <button class="youtube-btn" onclick="window.electronAPI.openExternalLink('https://www.youtube.com/@PG-panda')"><i class="fab fa-youtube"></i></button>
+        <button class="telegram-btn" onclick="window.electronAPI.openExternalLink('https://t.me/panda_hub7')"><i class="fab fa-telegram"></i></button>
+        <button class="whatsapp-btn" onclick="window.electronAPI.openExternalLink('https://wa.me/201096897507')"><i class="fab fa-whatsapp"></i></button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+
+<img src="../sound-image/pg.png" id="pg-img-bg" alt="Background Image">
+
+
+<div id="app-container" style="display: none;">
+
+
+
+<!-- المكان اللي عايز تحط فيه الأزرار -->
+<div class="buttons-container">
+    <div class="social-buttons">
+        <button class="icon-btn discord-btn" onclick="playBtnClick(); window.electronAPI.openExternalLink('https://discord.gg/jDnKNUawjM')">
+            <i class="fab fa-discord"></i>
+        </button>
+
+        <button class="icon-btn youtube-btn" onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.youtube.com/@PG-panda')">
+            <i class="fab fa-youtube"></i>
+        </button>
+
+        <button class="icon-btn telegram-btn" onclick="playBtnClick(); window.electronAPI.openExternalLink('https://t.me/panda_hub7')">
+            <i class="fab fa-telegram"></i>
+        </button>
+        <button class="icon-btn whatsapp-btn" onclick="playBtnClick(); window.electronAPI.openExternalLink('https://wa.me/201096897507')">
+            <i class="fab fa-whatsapp"></i>
+        </button>
+    </div>
+</div>
+
+<div class="main-sections">
+
+    <button class="main-section-btn" onclick="playMainClick(); showSection('Home')" data-section="Home">🏠Home</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('drivers')" data-section="drivers">🖥️Drivers</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('programs')" data-section="programs">📦Programs</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('Emulator')" data-section="Emulator">🎮Emulator</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('tools')" data-section="tools">🛠️Tools</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('windows')" data-section="windows">🪟Windows</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('ai')" data-section="ai">🤖AI</button>
+    <button class="main-section-btn" onclick="playMainClick(); showSection('Another')" data-section="Another">🧩 Another</button>
+
+</div>
+
+<!-- ================================================== -->
+<!--           الكود الجديد والمطور لقسم Home             -->
+<!-- ================================================== -->
+<div id="Home" class="section">
+
+<div id="user-info"> 
+	    <h3>🔑 User Informations</h3>
+	    <div class="info-item">
+	        <span class="label">USER KEY:</span>
+	        <span id="user-key" class="value">XXXX-XXXX-XXXX</span>
+	    </div>
+	    <div class="info-item">
+	        <span class="label">END DATE:</span>
+	        <span id="expiry-date" class="value">XX*XX*XXXX</span>
+	    </div>
+        <button id="buy-key-home" onclick="window.electronAPI.openPaymentWindow()" style="background: linear-gradient(135deg, #00c864, #00a050); margin-top: 15px; width: 100%; padding: 10px; border: none; border-radius: 8px; color: #000; font-weight: bold; cursor: pointer;"><i class="fas fa-key"></i> Buy Key / Renew</button>
+	</div>
+
+
+    <!-- زر تسجيل الخروج -->
+    <div id="top-right-container">
+        <button id="change-key-button" class="changeKeyBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            Log out
+        </button>
+    </div>
+
+    <!-- صندوق التحديثات -->
+    <div id="updates-box">
+        <h3>📢 Last Updates</h3>
+        <p id="update-date">🗓️ 2-8-2026</p>
+        <ul>
+<li>➕ إضافة ادوات جديدة</li>
+<li>🛡️ تحسين حماية البرنامج</li>
+<li>🔄 تحديث بعض الأدوات</li>
+<li>🎨 تغيير طفيف في شكل البرنامج</li>
+<li>🤖 إضافة Panda AI Assistant</li>
+
+        </ul>
+    </div>
+
+    <!-- المطور -->
+    <div id="developed-by">
+        <img src="../sound-image/icon.png" alt="Panda Icon" class="dev-icon">
+        <div id="update-info" style="font-weight: bold; font-size: 15px;"></div>
+    </div>
+
+    <!-- صندوق الترحيب -->
+<div id="welcome-box">
+  <h3>👋 WELCOME IN TOOL BOX</h3>
+  <div id="ai-open-btn">
+    <i class="fas fa-robot"></i>
+    <span onclick="playBtnClick()">Panda AI Assistant</span>
+</div>
+</div>
+
+<div id="ai-chat-box">
+
+    <div id="ai-header">
+        <i class="fas fa-robot"></i>
+        <span>Panda AI</span>
+    </div>
+
+    <div id="ai-messages"></div>
+
+    <div id="ai-input-box">
+
+        <textarea
+    id="ai-input"
+    placeholder="What are you need?"
+></textarea>
+
+        <button id="send-ai-btn">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+
+    </div>
+
+</div>
+
+
+<div id="device-box">
+    <h3>💻 Device Informations</h3>
+    <div class="stat-item">
+        <span>CPU:</span><span id="cpu-name">--</span>
+    </div>
+    <div class="stat-item">
+        <span>RAM:</span><span id="ram-info">--</span>
+    </div>
+    <div class="stat-item gpu-layout"> <!-- أضفنا كلاس جديد للتنسيق -->
+        <span>GPU:</span>
+        <div id="gpu-names">--</div> <!-- هنا سنضع أسماء كروت الشاشة -->
+    </div>
+</div>
+
+
+
+<script>
+  
+        // الكود الصحيح لتفعيل الزر المضغوط عليه
+        document.addEventListener('DOMContentLoaded', () => {
+    if (window.electronAPI && window.electronAPI.onSystemInfo) {
+        window.electronAPI.onSystemInfo((data) => {
+        const cpuEl = document.getElementById('cpu-name');
+        const ramEl = document.getElementById('ram-info');
+        const gpuNamesContainer = document.getElementById('gpu-names');
+
+        if (cpuEl) cpuEl.textContent = data.cpu;
+        if (ramEl) ramEl.textContent = data.ram;
+
+        if (gpuNamesContainer) {
+            gpuNamesContainer.innerHTML = ''; // مسح المحتوى القديم
+
+            if (data.gpu && data.gpu.length > 0) {
+                // إنشاء عنصر لكل اسم كرت شاشة
+                data.gpu.forEach(gpuName => {
+                    const gpuNameElement = document.createElement('div');
+                    gpuNameElement.textContent = gpuName;
+                    gpuNamesContainer.appendChild(gpuNameElement);
+                });
+            } else {
+                gpuNamesContainer.textContent = 'N/A';
+            }
+        }
+    });
+    }
+  // get app version and insert into welcome box
+  try {
+  if (window.electronAPI?.getAppVersion) {
+    window.electronAPI.getAppVersion().then(v => {
+      if (v) {
+        // تحديث النص في صندوق الترحيب
+        const welcomeH = document.querySelector('#welcome-box h3');
+        if (welcomeH) welcomeH.textContent = `👋 WELCOME IN TOOL BOX v${v}`;
+
+        // تحديث النص في الهيدر (تأكد من استخدام .title لأنها Class)
+        const welcomep = document.querySelector('.login-header .title h2');
+        if (welcomep) welcomep.textContent = `Panda-Toolbox v${v}`;
+      }
+    }).catch(err => console.error("Promise error:", err));
+  }
+} catch (e) { console.warn('getAppVersion failed', e); }
+});
+
+
+        // مثال على كيفية تفعيل زر معين برمجياً
+        function activateButton(sectionName) {
+            const targetButton = document.querySelector(`[data-section="${sectionName}"]`);
+            if (targetButton) {
+                // إزالة active من كل الأزرار
+                document.querySelectorAll('.main-section-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // تفعيل الزر المطلوب
+                targetButton.classList.add('active');
+                
+                const status = document.getElementById('status');
+                status.textContent = `تم تفعيل الزر: ${targetButton.textContent}`;
+            }
+        }
+
+        // مثال: تفعيل زر الرئيسية بعد 3 ثواني
+        setTimeout(() => {
+            activateButton('home');
+        }, 3000);
+    </script>
+
+<script>
+    // تأثير عند مرور الماوس
+    const logoutBtn = document.getElementById("change-key-button");
+    logoutBtn.addEventListener("mouseover", () => {
+    });
+    logoutBtn.addEventListener("mouseout", () => {
+    });
+</script>
+
+</div>
+</div>
+
+
+<div id="drivers" class="section">
+    <div class="section-buttons right">
+        <button class="download-btn" title="تعريف دايركت اكس لكارت الشاشة"
+        onclick=" playBtnClick(); window.electronAPI.runToolAsAdmin('directx.exe')">🎮 Directx</button>
+        <button class="download-btn" title="برنامج تعريفات الفيجوال x86 و x64"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('VisualCppRedist.exe')">⚙️ Aio</button>
+        <button class="download-btn" title="تعريفات الفيجوال للويندوز + دايراكت اكس كارت الشاشة"
+        onclick="
+        playBtnClick(); window.electronAPI.runToolAsAdmin('VisualCppRedist.exe');
+        window.electronAPI.runToolAsAdmin('directx.exe');
+        ">📦 full.driver</button>
+    </div>
+
+    <div class="section-buttons right2">
+
+       <button class="download-btn" title="تعريفات .NET Framework"
+       onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('.net.exe')">🧩 .NET</button>
+       <button class="download-btn" title="تعريفات Java Runtime"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('java.exe')">☕ Java</button>
+        <button class="download-btn" title="تعريفات VC++ "
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('VC.exe')">📦 VC++</button>
+
+    </div>
+
+    <div class="section-buttons right3">
+        <button class="download-btn" title="موقع تعريفات amd"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.amd.com/en/support/download/drivers.html')">🔴 AMD driver</button>
+        <button class="download-btn" title="موقع تعريفات نفيديا"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.nvidia.com/en-us/geforce/drivers/')">🟢 Geforce driver</button>
+        <button class="download-btn" title="موقع تعريفات انتل"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.intel.com/content/www/us/en/download-center/home.html')">🔵 Intel driver</button>
+    </div>
+</div>
+<div id="programs" class="section">
+
+    <!-- =========================== -->
+    <!-- 📌 PAGE 1 - البرامج الأساسية -->
+    <!-- =========================== -->
+    <div id="programs-page1">
+
+    <div 
+    class="section-buttons right">
+            <button class="download-btn" title="برنامج ضغط وفك ضغط الملفات"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/winrar-x64-701.exe')">🗜️ WinRAR</button>
+
+            <button class="download-btn" title="لحذف الملفات المستعصية التي ترفض الحذف"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/unlocker-setup.exe')">🔓 IObit Unlocker</button>
+
+            <button class="download-btn" title="تنظيف الجهاز من البرمجيات الخبيثة والضارة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Malware.rar')">🛡️ Malware Cleaner</button>
+
+            <button class="download-btn" title="برنامج تسريع وتحميل الملفات من الإنترنت"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Internet.Download.Manager.rar')">⬇️ Download Manager</button>
+
+            <button class="download-btn" title="استعادة الملفات المحذوفة من الهارد أو الفلاشة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Glary_File_Recovery_Pro_1.29.0.30.rar')">♻️ File Recovery</button>
+
+            <button class="download-btn" title="مراقبة أداء الكارت وكسر السرعة للألعاب"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/MSIAfterburnerSetup466Beta3.exe')">📈 MSI Afterburner</button>
+        </div>
+
+        <div class="section-buttons right2">
+            <button class="download-btn" title="فحص حالة الهارد ديسك ودرجة حرارته"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/hdsentinel_pro_setup.rar')">💽 Hard Disk Sentinel</button>
+
+            <button class="download-btn" title="حذف البرامج من جذورها وتنظيف مخلفاتها"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/revosetup.rar')">🗑️ Revo Uninstaller</button>
+
+            <button class="download-btn" title="تجميد النظام لحماية الجهاز من التغييرات"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Shadow.Defender.rar')">👤 Shadow Defender</button>
+
+            <button class="download-btn" title="برنامج التحكم عن بعد والدعم الفني"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/UltraViewer.rar')">🖥️ UltraViewer</button>
+
+            <button class="download-btn" title="تغيير حجم البارتشنات وإدارة الهارد"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/resizer-free-portable.zip')">💽 Resizer Tool</button>
+
+            <button class="download-btn" title="حرق نسخ الويندوز على الفلاشة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/rufus-4.11.exe')">💿 Rufus</button>
+        </div>
+
+        <div class="section-buttons right3">
+            <button class="download-btn" title="عرض معلومات مفصلة عن مواصفات جهازك"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/spsetup133.exe')">🌡️ Speccy</button>
+
+            <button class="download-btn" title="تحديث تعريفات الجهاز والقطع المفقودة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Driver.booster.12.pro.rar')">🚀 Driver Booster</button>
+
+            <button class="download-btn" title="كتم صوت الميكروفون بضغطة واحدة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Mic.Mute.rar')">🎤 Mic Mute</button>
+
+            <button class="download-btn" title="تنظيف الرام وتسريع أداء الجهاز"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/WMOSetup_4.2.2.128.rar')">⚡ RAM Booster</button>
+
+            <button class="download-btn" title="إصلاح أخطاء ملفات الـ DLL الناقصة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/DLL.PROBLEMS.SOLVER.rar')">🧩 DLL Fixer</button>
+
+            <button class="download-btn" title="برنامج خلفيات سطح المكتب المتحركة"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/lively-wallpaper-2-1-0-8.exe')">🎨 Lively Wallpaper</button>
+        </div>
+
+        <button class="next-arrow" onclick="showProgramsPage(2)">🡢</button>
+
+    </div> <!-- END PAGE 1 -->
+
+
+    <!-- =========================== -->
+    <!-- 🔥 PAGE 2 - إضافات احترافية -->
+    <!-- =========================== -->
+    <div id="programs-page2" style="display:none;">
+
+        <div class="section-buttons right">
+        <button class="download-btn" title="موقع تحميل ادوبي فوتوشوب 2025"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://wifi4soft.com/ar/adobe-photoshop-2025')">🖼️ Adobe Photoshop 2025</button>
+        <button class="download-btn" title="برنامج فورمات الهارد نهائيا"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/hdd-low-level-format-tool-4-50.exe')"> 💽 HDD Low Level Format</button>
+
+        </div>
+
+        <div class="section-buttons right2">
+            <button class="download-btn" title="موقع تحميل ادوبي افتر ايفكتس 2024"
+            onclick="playBtnClick(); window.electronAPI.openExternalLink('https://wifi4soft.com/ar/adobe-after-effects')">💻 Adobe After Effects 2024</button>
+            <button class="download-btn" title="برنامج فحص واصلاح الباد سيكتور"
+            onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/HDD.Regenerator.rar')">🛠️ HDD Regenerator</button>
+        </div>
+
+        <div class="section-buttons right3">
+            <button class="download-btn" title="موقع تحميل بلندر"
+            onclick="playBtnClick(); window.electronAPI.openExternalLink('https://wifi4soft.com/ar/blender')">🎬 Blender</button>
+        </div>
+
+        <!-- زر الرجوع -->
+        <button class="next-arrow" onclick="showProgramsPage(1)">🡠</button>
+
+    </div> <!-- END PAGE 2 -->
+</div>
+
+
+<div id="Emulator" class="section">
+    <div class="section-buttons right">
+        <button class="download-btn" title="برنامج لعرض ملفات المحاكي"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Fx_file_explorer.rar')">📁 FX file</button>
+        <button class="download-btn" title="برنامج تويتر للمحاكي"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/Twitter.rar')">🐦 Twitter</button>
+        <button class="download-btn" title="برناج apk للمحاكي"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/APKPure.rar')">📱 APK Pure</button>
+        <button class="download-btn" title="لينك تحميل ببجي الفيتنامية apk"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://apkpure.com/ar/pubg-mobile-vn/com.vng.pubgmobile')">🇻🇳 pupg vt apk</button>
+        <button class="download-btn" title="لينك تحميل ببجي التايوانية apk"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://m.apkpure.com/pubg-mobile：絕地求生m/com.rekoo.pubgm')">🇹🇼 pupg tw apk</button>
+    </div>
+
+    <div class="section-buttons right2">
+        <button class="download-btn" title="محاكي الجيم لوب"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/GLP_installer_1000218456_market.exe')">🎯 GAMELOOP</button>
+        <button class="download-btn" title="محاكي بلوستاك"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/BlueStacksInstaller_5.22.85.1011_native_af674d66ec8de43b5053625a42cf478e_MzsxNSwwOzUsMTsxNSw0OzE1LDU7MTU.exe')">🔷 BlueStacks</button>
+        <button class="download-btn" title="محاكي LDPlayer"
+        onclick="playBtnClick(); downloadFileFromUrl('https://github.com/pg0panda/panda-app-programs/releases/download/panda-app-v1/LDPlayer9_ens_44657388_ld.exe')">🎪 LDPlayer</button>
+        <button class="download-btn" title="لينك تحميل ببجي العالمية apk"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://m.apkpure.com/pubg-mobile-for-android-1-6/com.tencent.ig')">🌍 pupg gl apk</button>
+        <button class="download-btn" title="لينك تحميل ببجي الكورية apk"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://pubg-mobile-kr.ar.uptodown.com/android')">🇰🇷 pupg kr apk</button>
+    </div>
+</div>
+
+<div id="tools" class="section">
+    <div class="section-buttons right">
+        <button class="download-btn" title="اداة حذف محاكي الجيم لوب"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('GAMELOOPDELETE.ps1')">🗑️ Gameloop delete</button>
+        <button class="download-btn" title="اداة اصلاح تعطل الجيم لوب عند 98 في المئة"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('FIX98.ps1')">🔧 Fix 98 GAMELOOP</button>
+        <button class="download-btn" title="اغلاق المحاكي بالكامل"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('killemulator.ps1')">⚰️ Kill emulator</button>
+        <button class="download-btn" title="اداة توسيع مساحة الرام"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('RamOptmizer.ps1')">⚡ RAM Optimizer</button>
+        <button class="download-btn" title="اداة اعادة ضبط الشبكة"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('nettool.ps1')">🌐 Network tool</button>
+        <button class="download-btn" title="اداة زيادة مساحة الرام من الهارد"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('increasememory.ps1')">💾 Increase RAM</button>
+    </div>
+
+    <div class="section-buttons right2">
+        <button class="download-btn" title="اداة تنظيف الهارد"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('CleanDisk.ps1')">🧹 Clean Disk</button>
+        <button class="download-btn" title="اداة حذف الملفات المؤقتة"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('cleantemp.ps1')">🗂️ Clean temp</button>
+        <button class="download-btn" title="اداة تنظيف الجهاز"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('clean.ps1')">✨ Clean pc</button>
+        <button class="download-btn" title="اداة تثبيت ADB"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('adb-setup-1.3.exe')">📥 Install ADB</button>
+        <button class="download-btn" title="اداة عرض معلومات الجهاز بالكامل"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('pcinfo.ps1')">📊 PC info</button>
+        <button class="download-btn" title="اداة اعادة ضبط الجدار الناري"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('resetfirewall.ps1')">🔥 Reset firewall</button>
+    </div>
+
+    <div class="section-buttons right3">
+        <button class="download-btn" title="اداة تسريع الجهاز وتهيئته للالعاب"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('tweak.bat')">⚡ Tweak</button>
+        <button class="download-btn" title="برنامج حل مشاكل الانترنت"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('gComIntRep_x64.exe')">🌐 Net Problems Solver</button>
+        <button class="download-btn" title="برنامج تغيير اي دي الهارد"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('HWIDkey_Changer.exe')">🔑 HWIDkey Changer</button>
+        <button class="download-btn" title="برنامج ترسيت الهوست"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('HostMechanic.exe')">🔧 Host Mechanic</button>
+        <button class="download-btn" title="اداة تشتمل اهم اساسيات الويندوز"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Windows_Maintenance_Tool.ps1')">🖥️ Windows Tool</button>
+        <button class="download-btn" title="اداة اصلاح الويندوز بالكامل"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('fix pc.ps1')">🛠️ Fix PC</button>
+    </div>
+</div>
+
+<div id="windows" class="section">
+
+    <div class="section-buttons right">
+        <button class="download-btn" title="اداة تفعيل الويندوز ومايكروسوفت اوفيس"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('KMS_VL_ALL_AIO.cmd')">🔑Activator -By-CMD</button>
+        <button class="download-btn" title="برنامج تفعيل الويندوز و الاوفيس"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('AAct_x64.exe')">🔑Win&O Activator</button>
+        <button class="download-btn" title="برنامج تفعيل اوفيس و ويندوز"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Launch-Activator.exe')">🔑Win&O Activator</button>
+        <button class="download-btn" title="تفعيل جميع نسخ ويندوز 11 و 10 "
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('kmsactivator-cli.exe')">🔑 Windows Activator</button>
+    </div>
+
+    <div class="section-buttons right2">
+        <button class="download-btn" title="موقع تحميل ويندوز 11 برو معدلة"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.swiftuploads.com/E1x3AVbezyk6/file')">👻 Win 11 Pro ghost</button>
+        <button class="download-btn" title="موقع تحميل ويندوز 11 برو اصلية"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.microsoft.com/ar-sa/software-download/windows11')">🪟 Win 11 microsoft</button>
+        <button class="download-btn" title="موقع تحميل ويندوز 10 برو معدلة"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.swiftuploads.com/LK0G10Rez917/file')">👻 Win 10 Pro ghost</button>
+        <button class="download-btn" title="موقع تحميل ويندوز 10 برو اصلية"
+        onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.microsoft.com/ar-sa/software-download/windows10')">🪟 Win 10 microsoft</button>
+    </div>
+
+    <div class="section-buttons right3">
+        <button class="download-btn" title="اداة غلق حماية ويندوز 11"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Disable_Windows11_Defender.ps1')">🛡️ Windows 11 Security Disable</button>
+        <button class="download-btn" title="اداة تفعيل حماية ويندوز 11"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Restore_Security.ps1')">🛡️ Windows 11 Security Enable</button>
+        <button class="download-btn" title="برنامج تحكم في حماية الويندوز"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('dControl.exe')">🛡️Windows 10,11 Defender</button>
+        <button class="download-btn" title="برنامج حظر تحديثات الويندوز"
+        onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('WinUpdateBlocker.exe')">🚫Windows Update Blocker</button>
+
+    </div>
+
+
+</div>
+
+<div id="ai" class="section">
+
+  <div id="ai-page-1">
+<!-- القسم الأول -->
+<div class="section-buttons right">
+    <button class="download-btn" title="محادثات وكتابة أكواد وشرح أي حاجة"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://chatgpt.com/')">🧠 ChatGPT</button>
+    <button class="download-btn" title=" مساعد للبرمجة وكتابة الأكواد الذكية"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://chat.deepseek.com/')">🧠 Deep Seek</button>
+    <button class="download-btn" title="كتابة الاكواد والمساعدة في البرمحة"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://manus.im/app')">🧠 Manus</button>
+    <button class="download-btn" title="مساعد برمجي وكتابة أكواد ذكي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://claude.ai/new')">🧠 Claude</button>
+    <button class="download-btn" title="ذكاء اصطناعي للبحث والمحادثة"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://gemini.google.com/')">🧠 Gemini</button>
+    <button class="download-btn" title="محرك بحث مخصص للمبرمجين"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://phindai.org/phind-chat')">🧠 Phind</button>
+</div>
+
+<!-- القسم الثاني -->
+<div class="section-buttons right2">
+    <button class="download-btn" title="استخراج وكتابة الأكواد بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://app.blackbox.ai/')">🧠 Blackbox</button>
+    <button class="download-btn" title="مساعد ذكي من فيسبوك للتواصل والبحث"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.meta.ai/')">🧠 Meta</button>
+    <button class="download-btn" title="نموذج لغة مفتوح المصدر للبرمجة والكتابة"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://chat.mistral.ai/chat?q=')">🧠 Mistral</button>
+    <button class="download-btn" title="بحث ذكي بالإجابات المباشرة مع مصادر"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.perplexity.ai/')">🧠 Perplexity</button>
+    <button class="download-btn" title="شات بوت من X (تويتر سابقًا) للمحادثة السريعة"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://grok.com/chat')">🧠 Grok</button>
+   <button class="download-btn" title="منصة ذكاء اصطناعي قوية لإنجاز المهام"
+   onclick="playBtnClick(); window.electronAPI.openExternalLink('https://hercules.app')">🧠 Hercules</button>
+</div>
+
+<!-- القسم الثالث -->
+<div class="section-buttons right3">
+    <button class="download-btn" title="تعديل وإنشاء الصور بسهولة"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://playgroundai.com/')">🎨 Playground</button>
+    <button class="download-btn" title="NightCafe - توليد صور بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://creator.nightcafe.studio/')">🎨 NightCafe</button>
+    <button class="download-btn" title="Leonardo AI - إنشاء صور احترافية بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://leonardo.ai/')">🎨 Leonardo</button>
+    <button class="download-btn" title="Sloyd - تصميم 3D سريع بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://sloyd.ai/')">🎨 Sloyd</button>
+    <button class="download-btn" title="Ideogram - إنشاء صور مع نصوص دقيقة بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://ideogram.ai/')">🎨 Ideogram</button>
+    <button class="download-btn" title="Reimagine Home - إعادة تصميم ديكور المنزل بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.reimaginehome.ai/')">🏡 Reimagine</button>
+</div>
+    <button class="next-arrow" onclick="showAISection(2)">🡢</button>
+</div>
+
+<div id="ai-page-2" style="display:none;">
+
+
+  <div class="section-buttons right">
+    <button class="download-btn" title="Runway - تعديل وإنشاء فيديوهات بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://runwayml.com/')">🎬 Runway</button>
+    <button class="download-btn" title="Pika - إنشاء فيديوهات بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://pika.art/')">🎬 Pika</button>
+    <button class="download-btn" title="Synthesia - فيديوهات بشخصيات تتكلم"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.synthesia.io/')">🎬 Synthesia</button>
+    <button class="download-btn" title="HeyGen - إنشاء فيديوهات Avatar"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.heygen.com/')">🎬 HeyGen</button>
+    <button class="download-btn" title="InVideo AI - تحويل النص لفيديو"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://invideo.io/')">🎬 InVideo</button>
+    <button class="download-btn" title="Kaiber - إنشاء فيديوهات من صور أو نص"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://kaiber.ai/')">🎬 Kaiber</button>
+
+  </div>
+
+  <div class="section-buttons right2">
+    <button class="download-btn" title="تحويل النص إلى صوت واقعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.elevenlabs.io/')">🔊 ElevenLabs</button>
+    <button class="download-btn" title="تحويل النص إلى صوت احترافي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://murf.ai/')">🔊 Murf</button>
+    <button class="download-btn" title="تحويل النص إلى صوت طبيعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://play.ht/')">🔊 PlayHT</button>
+    <button class="download-btn" title="أصوات بشرية واقعية"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://lovo.ai/')">🔊 LOVO</button>
+    <button class="download-btn" title="قراءة النصوص صوتيًا"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.naturalreaders.com/')">🔊 NaturalReader</button>
+    <button class="download-btn" title="Resemble AI - إنشاء واستنساخ الأصوات بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.resemble.ai/')">🔊 Resemble</button>
+
+  </div>
+
+
+  <div class="section-buttons right3">
+    <button class="download-btn" title="أداة لكتابة المحتوى والتصميم بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://simplified.com/ai-writer')">✍️ Simplified</button>
+    <button class="download-btn" title="كتابة محتوى وتسويق تلقائي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.copy.ai/')">✍️ Copy.ai</button>
+    <button class="download-btn" title="تنظيم وكتابة بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.notion.so/product/ai')">✍️ Notion</button>
+    <button class="download-btn" title="إنشاء عروض تقديمية بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://tome.app/')">✍️ Tome</button>
+    <button class="download-btn" title="كتابة محتوى وتسويق بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.jasper.ai/')">✍️ Jasper</button>
+    <button class="download-btn" title="كتابة محتوى تلقائي بالذكاء الاصطناعي"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://writesonic.com/')">✍️ Writesonic</button>
+
+  </div>
+    <button class="next-arrow" onclick="showAISection(1)">🡠</button>
+ </div>
+
+  </div>
+
+<div id="Another" class="section">
+
+<div class="section-buttons right">
+    <button class="download-btn" title="برنامج المحادثات الصوتية والكتابية"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Discord.exe')">💬 Discord</button>
+    <button class="download-btn" title="مفسر لغة بايثون لتشغيل السكربتات"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Python.exe')">🐍 Python</button>
+    <button class="download-btn" title="نظام التحكم في الإصدارات وإدارة الأكواد"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Git.exe')">🌿 Git</button>
+    <button class="download-btn" title="محرر نصوص وكود خفيف وسريع"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Notepad++.exe')">📝 Notepad++</button>
+    <button class="download-btn" title="محرر أكواد مع ذكاء اصطناعي مدمج"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Cursor.exe')">🤖 Cursor</button>
+    <button class="download-btn" title="برنامج تنظيف النظام من الملفات المؤقتة"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('CCleaner.exe')">🧽 CCleaner</button>
+</div>
+
+<div class="section-buttons right2">
+    <button class="download-btn" title="التحكم عن بعد في الأجهزة"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('TeamViewer.exe')">🖥️ TeamViewer</button>
+    <button class="download-btn" title="بديل TeamViewer للتحكم عن بعد"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('AnyDesk.exe')">🖥️ AnyDesk</button>
+    <button class="download-btn" title="برنامج ضغط وفك ضغط الملفات"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('7Zip.exe')">📦 7-Zip</button>
+    <button class="download-btn" title="متجر Epic Games للألعاب"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('EpicGamesLauncher.exe')">🎮 Epic Games</button>
+    <button class="download-btn" title="منصة ستيم لتحميل وتشغيل الألعاب"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Steam.exe')">🎮 Steam</button>
+    <button class="download-btn" title="موقع GitHub لمشاركة وإدارة الأكواد"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://github.com/')">🐙 GitHub</button>
+</div>
+
+<div class="section-buttons right3">
+    <button class="download-btn" title="برنامج مكالمات الفيديو والمؤتمرات"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Zoom.exe')">📹 Zoom</button>
+    <button class="download-btn" title="متصفح Brave لحجب الإعلانات"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Brave.exe')">🦁 Brave</button>
+    <button class="download-btn" title="متصفح جوجل كروم"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Chrome.exe')">🌐 Chrome</button>
+    <button class="download-btn" title="محرر الأكواد الشهير من مايكروسوفت"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('VisualStudioCode.exe')">🖥️ VS Code</button>
+    <button class="download-btn" title="برنامج صيانة وتسريع الويندوز"
+    onclick="playBtnClick(); window.electronAPI.runToolAsAdmin('Glary.exe')">🧹 Glary Utilities</button>
+    <button class="download-btn" title="موقع MediaFire لرفع وتحميل الملفات"
+    onclick="playBtnClick(); window.electronAPI.openExternalLink('https://www.mediafire.com/')">☁️ MediaFire</button>
+</div>
+
+    </div>
+
+
+<div id="progress-container" style="display:none; position: fixed; bottom: 300px; left: 20px; width:300px; z-index: 20;">
+    <div style="background:#222; border-radius:8px; overflow:hidden; position:relative;">
+        <div id="progress-bar" style="width:0%; height:24px; background:#4e54c8; transition:width 0.3s; position:relative;">
+            <span id="progress-percent" style="position:absolute; left:0; top:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:bold; font-size:15px;">0%</span>
+        </div>
+    </div>
+    <div id="progress-info" style="text-align:center; color:#fff; margin-top:5px; font-size:14px;"></div>
+    <button id="cancel-download-btn" onclick="cancelDownload()" style="
+        display: block;
+        margin: 10px auto 0;
+        padding: 8px 20px;
+        background: #e40a0a;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: bold;
+        transition: background 0.3s ease;
+    " onmouseover="this.style.background='#b30808'" onmouseout="this.style.background='#e40a0a'">
+        إيقاف التحميل
+      </button>
+      <script>
+        // hides the progress UI
+        function hideProgressUI() {
+          const container = document.getElementById('progress-container');
+          if (container) container.style.display = 'none';
+          const bar = document.getElementById('progress-bar');
+          if (bar) bar.style.width = '0%';
+          const pct = document.getElementById('progress-percent');
+          if (pct) pct.textContent = '0%';
+          const info = document.getElementById('progress-info');
+          if (info) info.textContent = '';
+        }
+
+        // called by cancel button
+        function cancelDownload() {
+          try { window.electronAPI.cancelDownload(); } catch (e) {}
+          hideProgressUI();
+        }
+
+        // update progress events
+        try {
+          window.electronAPI.onDownloadProgress((data) => {
+            const container = document.getElementById('progress-container');
+            if (container) container.style.display = 'block';
+            const bar = document.getElementById('progress-bar');
+            const pct = document.getElementById('progress-percent');
+            const info = document.getElementById('progress-info');
+            if (bar) bar.style.width = (data.percent || 0) + '%';
+            if (pct) pct.textContent = (data.percent || 0) + '%';
+            if (info) info.textContent = `${data.downloaded || 0} MB / ${data.total || 0} MB  Speed: ${data.speed || 0}`;
+          });
+
+          window.electronAPI.onDownloadComplete(() => {
+            // small delay so user sees 100%
+            setTimeout(() => {
+              hideProgressUI();
+            }, 800);
+          });
+
+          window.electronAPI.onDownloadCancelled(() => {
+            hideProgressUI();
+          });
+        } catch (e) {
+          console.warn('Download UI bridge not available', e);
+        }
+      </script>
+    </button>
+</div>
+    <script>
+
+document.addEventListener('contextmenu', function(e) {
+  // Allow context menu inside AI chat so users can copy/select naturally
+  if (e.target && e.target.closest && e.target.closest('#ai-chat-box')) return;
+  e.preventDefault();
+  return false;
+}, false);
+
+// 2. منع كل اختصارات لوحة المفاتيح الخطيرة
+document.addEventListener('keydown', function(e) {
+  // منع F12 و أدوات المطورين
+  if (e.key === 'F12' || 
+      // منع Ctrl+Shift+I (Developer Tools)
+      (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+      // منع Ctrl+Shift+J (Console)
+      (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+      // منع Ctrl+Shift+C (Inspect Element)
+      (e.ctrlKey && e.shiftKey && e.key === 'C') ||
+      // منع Ctrl+U (View Source)
+      (e.ctrlKey && e.key === 'u') ||
+      // منع Ctrl+S (Save Page)
+      (e.ctrlKey && e.key === 's') ||
+      // منع Ctrl+X (Cut)
+      (e.ctrlKey && e.key === 'x') ||
+      // منع Ctrl+A (Select All)
+      (e.ctrlKey && e.key === 'a') ||
+      // منع Ctrl+P (Print)
+      (e.ctrlKey && e.key === 'p') ||
+      // منع Ctrl+Shift+Delete (Clear Browsing Data)
+      (e.ctrlKey && e.shiftKey && e.key === 'Delete')) {
+    e.preventDefault();
+    return false;
+  }
+}, false);
+
+// 3. منع التحديد تماماً
+document.addEventListener('selectstart', function(e) {
+  // Allow selection inside AI chat (messages and input) and other editable elements
+  try {
+    if (e.target && e.target.closest && (e.target.closest('#ai-chat-box') || e.target.closest('#ai-input') || e.target.isContentEditable)) {
+      return; // allow selection
+    }
+  } catch (e2) {}
+  e.preventDefault();
+  return false;
+}, false);
+
+// 4. منع السحب والإفلات
+document.addEventListener('dragstart', function(e) {
+  // Allow dragstart inside AI chat code blocks if needed
+  try {
+    if (e.target && e.target.closest && e.target.closest('#ai-chat-box')) return;
+  } catch (e2) {}
+  e.preventDefault();
+  return false;
+}, false);
+
+
+// 5. منع القص
+document.addEventListener('cut', function(e) {
+  // Allow cutting inside AI input
+  try {
+    if (e.target && e.target.closest && (e.target.closest('#ai-input') || e.target.isContentEditable)) return;
+  } catch (e2) {}
+  e.preventDefault();
+  return false;
+}, false);
+
+// 6. كشف فتح Developer Tools
+let devtoolsOpen = false;
+const element = new Image();
+Object.defineProperty(element, 'id', {
+  get: function() {
+    devtoolsOpen = true;
+    forcelogout();
+    // يمكنك إضافة تحذير أو إغلاق البرنامج هنا
+  }
+});
+
+setInterval(function() {
+  devtoolsOpen = false;
+  console.log(element);
+  console.clear();
+  if (devtoolsOpen) {
+    // تحذير المستخدم
+    document.body.innerHTML = '<h1 style="color: red; text-align: center; margin-top: 200px;">⚠️ Developer Tools Detected! ⚠️</h1>';
+  }
+}, 1000);
+
+// 8. منع Print Screen (محاولة)
+document.addEventListener('keyup', function(e) {
+  if (e.key === 'PrintScreen') {
+    navigator.clipboard.writeText('');
+    alert('Screenshots are disabled!');
+  }
+});
+
+// 9. كشف blur/focus للكشف عن DevTools
+let checkStatus;
+checkStatus = setInterval(function() {
+  if (window.outerWidth - window.innerWidth > 160 || 
+      window.outerHeight - window.innerHeight > 160) {
+    // DevTools مفتوح على الجنب أو تحت
+    clearInterval(checkStatus);
+    document.body.innerHTML = '<h1 style="color: red; text-align: center; margin-top: 200px;">⚠️ Developer Tools Detected! ⚠️</h1>';
+  }
+}, 500);
+
+// 10. حماية الصور من الحفظ
+document.querySelectorAll('img').forEach(img => {
+  img.addEventListener('contextmenu', e => e.preventDefault());
+  img.style.pointerEvents = 'none';
+});
+
+// 11. تعطيل زر الماوس الأوسط
+document.addEventListener('mousedown', function(e) {
+  if (e.button === 1) {
+    // allow middle-click inside AI chat (e.g., paste) — otherwise block
+    try {
+      if (e.target && e.target.closest && e.target.closest('#ai-chat-box')) return;
+    } catch (e2) {}
+    e.preventDefault();
+    return false;
+  }
+}, false);
+
+// 12. منع التحديد بالماوس
+// keep global CSS-level disabling but allow JS-level selection in AI chat via selectstart exceptions
+document.body.style.userSelect = 'none';
+document.body.style.webkitUserSelect = 'none';
+document.body.style.mozUserSelect = 'none';
+document.body.style.msUserSelect = 'none';
+
+// 13. حماية ضد التلاعب بالكونسول
+(function() {
+  'use strict';
+  const devtools = /./;
+  devtools.toString = function() {
+    this.opened = true;
+  }
+  const checkDevTools = setInterval(function() {
+    if (devtools.opened) {
+      window.location.reload();
+    }
+  }, 500);
+})();
+
+// 14. منع فتح نوافذ جديدة من الكونسول
+window.open = function() {
+  return false;
+};
+
+        function showProgramsPage(num) {
+    document.getElementById("programs-page1").style.display = (num === 1 ? "block" : "none");
+    document.getElementById("programs-page2").style.display = (num === 2 ? "block" : "none");
+}
+
+function showAISection(num) {
+    document.getElementById("ai-page-1").style.display = (num === 1 ? "block" : "none");
+    document.getElementById("ai-page-2").style.display = (num === 2 ? "block" : "none");
+}
+
+// عند التحميل: إظهار صفحة الهبوط وإخفاء كل الأقسام الرئيسية
+document.addEventListener('DOMContentLoaded', () => {
+  const postLogin = document.getElementById('post-login');
+  if (postLogin) postLogin.style.display = 'block';
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.main-section-btn').forEach(b => b.classList.remove('active'));
+});
+
+  function showSection(sectionId) {
+    const sections = document.querySelectorAll('.section');
+    const btns = document.querySelectorAll('.main-section-btn');
+    const postLogin = document.getElementById('post-login');
+    const target = document.getElementById(sectionId);
+
+    if (!target) return;
+
+    const alreadyActive = target.classList.contains('active');
+
+    // إذا المستخدم ضغط على نفس الزر وهو داخل نفس القسم -> نرجعه لصفحة ما بعد تسجيل الدخول
+    if (alreadyActive) {
+      // إخفاء كل الأقسام وتعطيل الأزرار
+      sections.forEach(s => s.classList.remove('active'));
+      btns.forEach(b => b.classList.remove('active'));
+
+      // إظهار صفحة الهبوط
+      if (postLogin) postLogin.style.display = 'block';
+      return;
+    }
+
+    // خلاف ذلك: إظهار القسم المطلوب وإخفاء صفحة الهبوط
+    if (postLogin) postLogin.style.display = 'none';
+
+    sections.forEach(s => s.classList.remove('active'));
+    btns.forEach(b => b.classList.remove('active'));
+
+    target.classList.add('active');
+
+    // تفعيل الزر المطابق عبر data-section بدلاً من الفهارس
+    const targetBtn = document.querySelector(`.main-section-btn[data-section="${sectionId}"]`);
+    if (targetBtn) targetBtn.classList.add('active');
+  }
+    // --- أصوات الأزرار ---
+    const _audioMain = new Audio('../sound-image/clickmain.mp3');
+    const _audioBtn  = new Audio('../sound-image/clickbutton2.mp3');
+
+    function playMainClick() {
+        _audioMain.currentTime = 0;
+        _audioMain.play().catch(() => {});
+    }
+
+    function playBtnClick() {
+        _audioBtn.currentTime = 0;
+        _audioBtn.play().catch(() => {});
+    }
+    // ----------------------------
+
+    function downloadFileFromUrl(url) {
+    // إظهار البار عند بدء التحميل
+    document.getElementById('progress-container').style.display = 'block';
+    document.getElementById('progress-bar').style.width = '0%';
+    document.getElementById('progress-percent').innerText = '0%';
+    window.electronAPI.downloadFileFromUrl(url);
+}
+
+function cancelDownload() {
+    // استدعاء دالة إيقاف التحميل من Electron
+    window.electronAPI.cancelDownload();
+    // إخفاء شريط التقدم
+    document.getElementById('progress-container').style.display = 'none';
+    // إظهار رسالة للمستخدم
+    alert('تم إيقاف التحميل');
+}
+
+
+let lastUpdate = 0;
+let displayPercent = 0;
+
+window.electronAPI.onDownloadProgress((data) => {
+    const now = Date.now();
+
+    if (now - lastUpdate > 1000) {
+        lastUpdate = now;
+
+        displayPercent += (data.percent - displayPercent) * 0.08;
+
+        document.getElementById('progress-bar').style.width = displayPercent + '%';
+        document.getElementById('progress-percent').innerText = displayPercent.toFixed(0) + '%';
+
+        document.getElementById('progress-info').innerText =
+            `${data.downloaded || 0} MB / ${data.total || 0} MB - ${data.speed || 0}`;
+    }
+
+    if (data.percent >= 100) {
+        setTimeout(() => {
+            document.getElementById('progress-container').style.display = 'none';
+        }, 1000);
+    }
+});
+
+window.electronAPI.onDownloadComplete(() => {
+    alert('تم التحميل بنجاح!');
+});
+          // إضافة تأثيرات تفاعلية للعناصر
+        document.querySelectorAll('.stat-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+
+</script>
+
+<script src="../js/renderer.js" defer></script>
+<script src="../js/ai-chat.js" defer></script>
+
+</div> <!-- نهاية حاوية التطبيق الرئيسية -->
+</body>
+</html>

@@ -1,0 +1,11 @@
+
+SECRET_CONFIG = {
+    "GITHUB_OWNER": "pg0panda",
+    "GITHUB_REPO": "KEYS",
+    "GITHUB_BRANCH": "main",
+    "GITHUB_TOKEN": "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",
+    "GITHUB_FILE_PATH": "KEYS.json",
+    "BAN_FILE_PATH": "BAN.json",
+    "GENERAL_KEYS_FILE_PATH": "GENERAL_KEYS.json",
+    "Hardware_IDs_FILE_PATH": "HWID.txt"
+}
