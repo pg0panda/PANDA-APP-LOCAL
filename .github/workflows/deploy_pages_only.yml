@@ -1,0 +1,29 @@
+name: Deploy Code Pages Only
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare public directory with only pages and data
+        run: |
+          rm -rf public || true
+          mkdir -p public
+          cp -r src/html/* public/ || true
+          mkdir -p public/src/data
+          cp -r src/data/* public/src/data/ || true
+
+      - name: Deploy to gh-pages branch (pages only)
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          keep_files: false
