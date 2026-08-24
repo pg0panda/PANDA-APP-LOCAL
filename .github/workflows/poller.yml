@@ -20,7 +20,8 @@ jobs:
         with:
           node-version: '18'
 
-      - name: Install production dependencies only
+      - name: Install poller dependencies (server folder)
+        working-directory: server
         run: npm ci --omit=dev
 
       - name: Run poller
