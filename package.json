@@ -9,6 +9,8 @@
   "scripts": {
     "start": "electron .",
     "webhook": "node xpay-webhook-server.js",
+    "start:webhook": "node xpay-webhook-server.js",
+    "poller": "node server/poller.js",
     "clean": "taskkill /F /IM electron.exe /T 2>nul || exit 0",
     "clean-dist": "rimraf dist",
     "build": "npm run clean-dist && npm run clean && electron-builder --win",
@@ -29,6 +31,10 @@
     "node-fetch": "^2.7.0",
     "node-machine-id": "^1.1.12",
     "systeminformation": "^5.33.1"
+    ,"express": "^4.18.2",
+    "body-parser": "^1.20.2",
+    "nodemailer": "^6.9.3",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "@electron/rebuild": "^4.2.0",
