@@ -25,7 +25,7 @@
 
     async function loadCode(){
       try{
-        const res = await fetch('/src/data/available_codes.json');
+        const res = await fetch('src/data/available_codes.json');
         const json = await res.json();
         code = (new URL(location)).searchParams.get('code') || (json.generic && json.generic.length ? json.generic[0] : '');
         if(!code){ codeElem.textContent = '-- لا يوجد كود --'; copyBtn.disabled = true; }
