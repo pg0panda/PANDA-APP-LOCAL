@@ -1,0 +1,37 @@
+name: Claim Code (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'code category (day, week, month, 3months, 6months, year, generic)'
+        required: true
+      code:
+        description: 'The exact code to claim'
+        required: true
+
+jobs:
+  claim:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Run claim script
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/claim_code.js "${{ github.event.inputs.category }}" "${{ github.event.inputs.code }}"
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/available_codes.json src/data/claimed_codes.json
+          git commit -m "Claim code: ${{ github.event.inputs.code }} (category: ${{ github.event.inputs.category }})" || echo 'no changes to commit'
+          git push
