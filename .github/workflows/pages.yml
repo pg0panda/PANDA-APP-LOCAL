@@ -1,4 +1,4 @@
-name: Deploy static success pages to GitHub Pages
+name: Deploy static success pages to GitHub Pages (gh-pages)
 
 on:
   push:
@@ -6,31 +6,22 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    outputs:
-      artifact-path: public
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Prepare public dir
         run: |
+          rm -rf public || true
           mkdir -p public
           cp -r src/html/* public/ || true
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          path: public
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-      contents: read
-    steps:
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v3
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
+          publish_branch: gh-pages
+          keep_files: false
