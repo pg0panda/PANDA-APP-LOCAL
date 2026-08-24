@@ -18,16 +18,22 @@
     <div id="note" style="margin-top:12px;color:#9fb0bf"></div>
   </div>
   <script>
-    function qp(name){ const u=new URL(location); return u.searchParams.get(name); }
-    const placeholder = document.getElementById('code-value');
     const codeElem = document.getElementById('code');
     const copyBtn = document.getElementById('copyBtn');
     const closeBtn = document.getElementById('closeBtn');
     const note = document.getElementById('note');
-    let code = qp('code') || (placeholder.dataset && placeholder.dataset.code !== 'PUT-YOUR-CODE-HERE' ? placeholder.dataset.code : '');
-    if(!code) { codeElem.textContent = '-- لا يوجد كود --'; copyBtn.disabled = true; }
-    else { codeElem.textContent = code; }
-    copyBtn.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(code); note.textContent = 'تم نسخ الكود إلى الحافظة'; }catch(e){ note.textContent = 'تعذر النسخ. انسخ يدويًا.' } });
+    let code = '';
+    async function loadCode(){
+      try{
+        const res = await fetch('/src/data/available_codes.json');
+        const json = await res.json();
+        code = (new URL(location)).searchParams.get('code') || (json.month && json.month.length ? json.month[0] : '');
+        if(!code){ codeElem.textContent = '-- لا يوجد كود --'; copyBtn.disabled = true; }
+        else { codeElem.textContent = code; }
+      }catch(e){ codeElem.textContent = '-- لا يمكن تحميل الأكواد --'; copyBtn.disabled = true }
+    }
+    loadCode();
+    copyBtn.addEventListener('click', async ()=>{ try{ await navigator.clipboard.writeText(code); note.textContent = 'تم نسخ الكود إلى الحافظة'; const owner='mohamednasr9040@gmail.com'; const subject=encodeURIComponent('Claimed code: '+code); const body=encodeURIComponent('تم أخذ الكود: '+code+'\nالصفحة: month\nالوقت: '+new Date().toISOString()); window.location.href=`mailto:${owner}?subject=${subject}&body=${body}`; }catch(e){ note.textContent = 'تعذر النسخ. انسخ يدويًا.' } });
     closeBtn.addEventListener('click', ()=>{ window.close(); note.textContent = 'أغلق النافذة يدويًا إن لم تُغلق تلقائيًا.'; });
   </script>
 </body>
