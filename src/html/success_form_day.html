@@ -41,9 +41,14 @@
         await navigator.clipboard.writeText(code);
         note.textContent = 'تم نسخ الكود إلى الحافظة';
         const owner = 'mohamednasr9040@gmail.com';
-        const subject = encodeURIComponent('Claimed code: ' + code);
+        const subject = encodeURIComponent('Claimed code: ' + code + ' (category: day)');
         const body = encodeURIComponent('تم أخذ الكود: ' + code + '\nالصفحة: day\nالوقت: ' + new Date().toISOString());
+        // Open mailto for owner notification
         window.location.href = `mailto:${owner}?subject=${subject}&body=${body}`;
+        // Also open a prefilled GitHub issue page so the owner (or any signed-in GitHub user)
+        // can submit an Issue that will trigger automatic claim processing by Actions.
+        const issueUrl = `https://github.com/pg0panda/PANDA-APP-LOCAL/issues/new?title=${encodeURIComponent('Claimed code: ' + code + ' (category: day)')}&body=${encodeURIComponent('Code: ' + code + '\nCategory: day\nTime: ' + new Date().toISOString())}`;
+        window.open(issueUrl, '_blank');
       }catch(e){ note.textContent = 'تعذر النسخ. انسخ يدويًا.' }
     });
 

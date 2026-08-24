@@ -1,0 +1,50 @@
+name: Auto-claim code on issue
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  claim:
+    runs-on: ubuntu-latest
+    if: "contains(github.event.issue.title, 'Claimed code:')"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Parse title and run claim script
+        env:
+          ISSUE_TITLE: "${{ github.event.issue.title }}"
+          ISSUE_BODY: "${{ github.event.issue.body }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Issue title: $ISSUE_TITLE"
+          # Expect title like: "Claimed code: CODE (category: day)" or "Claimed code: CODE | category: day"
+          CODE=$(echo "$ISSUE_TITLE" | sed -n 's/.*Claimed code: \([^ ]*\).*/\1/p')
+          # Try to extract category from title or body
+          CATEGORY=$(echo "$ISSUE_TITLE" | sed -n 's/.*category[:=] *\([a-z0-9-]*\).*/\1/p')
+          if [ -z "$CATEGORY" ]; then
+            CATEGORY=$(echo "$ISSUE_BODY" | sed -n 's/.*category[:=] *\([a-z0-9-]*\).*/\1/p')
+          fi
+          if [ -z "$CATEGORY" ]; then
+            CATEGORY=generic
+          fi
+          echo "Parsed code=$CODE category=$CATEGORY"
+          if [ -z "$CODE" ]; then
+            echo "No code parsed from issue title; exiting"
+            exit 1
+          fi
+          node scripts/claim_code.js "$CATEGORY" "$CODE"
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/available_codes.json src/data/claimed_codes.json || true
+          git commit -m "Auto-claim code from issue: ${{ github.event.issue.number }}" || echo 'no changes'
+          git push || true
