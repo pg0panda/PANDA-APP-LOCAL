@@ -37,13 +37,8 @@
         .method-icon.blue { background: rgba(0,120,255,0.15); }
         .method-icon.green { background: rgba(0,200,100,0.15); }
         .method-icon.red { background: rgba(220,30,30,0.15); }
-        .customer-form { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; margin-bottom: 20px; }
-        .customer-form h4 { margin-bottom: 12px; color:#fff; }
-        .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        .field-group input { width: 100%; background: rgba(0,0,0,0.25); color: #fff; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 14px; outline: none; }
         .confirm-btn { display: block; width: 100%; padding: 16px; background: linear-gradient(135deg, #00c864, #00a050); border: none; border-radius: 12px; color: #000; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 25px; }
         .confirm-btn:disabled { background: rgba(255,255,255,0.08); color: #555; cursor: not-allowed; }
-        .confirm-btn.secondary { background: linear-gradient(135deg, #2b7cff, #195dd6); color: #fff; margin-top: 12px; }
         .order-summary { background: rgba(0,200,100,0.06); border: 1px solid rgba(0,200,100,0.2); border-radius: 14px; padding: 20px 24px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
         .order-price { font-size: 26px; font-weight: bold; color: #00c864; }
         .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #00c864; color: #000; padding: 10px 24px; border-radius: 25px; opacity: 0; transition: 0.3s; z-index: 100; }
@@ -115,21 +110,6 @@
             <div><h4 id="summary-name">باقة ...</h4><p>اشتراك Panda Toolbox</p></div>
             <div class="order-price" id="summary-price">-- جنيه</div>
         </div>
-
-        <div class="customer-form">
-            <h4>بيانات العميل</h4>
-            <div class="field-group">
-                <div>
-                    <label for="customer-name">الاسم</label>
-                    <input id="customer-name" type="text" placeholder="اسمك الكامل" />
-                </div>
-                <div>
-                    <label for="customer-email">البريد الإلكتروني</label>
-                    <input id="customer-email" type="email" placeholder="example@email.com" />
-                </div>
-            </div>
-        </div>
-
         <div class="payment-methods" style="display:none;">
             <div class="payment-method-card selected" onclick="selectPayment(this, 'direct')">
                 <div class="method-header">
@@ -139,7 +119,6 @@
             </div>
         </div>
         <button class="confirm-btn" id="confirm-btn" onclick="processPayment()" disabled>إتمام الدفع الآن</button>
-        <button class="confirm-btn secondary" id="paid-confirm-btn" onclick="processPaymentSuccess()" style="display:none;">تأكيد الدفع وتم استلام المبلغ</button>
     </div>
 </div>
 
@@ -172,38 +151,17 @@
         document.getElementById('confirm-btn').disabled = false;
     }
 
-    function getCustomerData() {
-        const email = document.getElementById('customer-email').value.trim();
-        const customerName = document.getElementById('customer-name').value.trim();
-        return { email, customerName };
-    }
-
     function processPayment() {
-        if (!selectedProd) {
-            alert('برجاء اختيار باقة أولاً');
-            return;
-        }
-
-        const { email } = getCustomerData();
-        if (!email) {
-            alert('برجاء إدخال البريد الإلكتروني قبل فتح بوابة الدفع');
-            return;
-        }
-
         const toast = document.getElementById('toast');
         toast.classList.add('show');
 
         const paymentData = {
             product: selectedProd,
             method: selectedPay || 'direct',
-            hwid: '',
-            customer: getCustomerData()
+            hwid: ''
         };
-
-        const paidConfirmBtn = document.getElementById('paid-confirm-btn');
-        if (paidConfirmBtn) paidConfirmBtn.style.display = 'block';
-
-        if (window.electronAPI && window.electronAPI.initiateRealPayment) {
+        
+        if(window.electronAPI && window.electronAPI.initiateRealPayment) {
             window.electronAPI.initiateRealPayment(paymentData);
         } else {
             alert('بوابة الدفع XPay قيد التشغيل، سيتم فتح رابط الدفع في المتصفح');
@@ -211,7 +169,7 @@
             window.open(targetLink, '_blank');
         }
     }
-
+    
 </script>
 
 <script src="../js/xpay-payment.js"></script>
