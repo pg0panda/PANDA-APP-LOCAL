@@ -84,7 +84,7 @@ function encodeBase64Utf8(value) {
   return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
 }
 
-async function syncLicenseToGitHub(codeRecord, plan, purchaseId, env) {
+async function syncLicenseToGitHub(codeRecord, plan, xpaySessionId, env) {
   if (!env.GITHUB_LICENSE_TOKEN) throw new Error('github_not_configured');
   const url = `https://api.github.com/repos/${GITHUB_LICENSE_REPO}/contents/${GITHUB_LICENSE_FILE}`;
   const headers = {
@@ -102,16 +102,18 @@ async function syncLicenseToGitHub(codeRecord, plan, purchaseId, env) {
     if (!Array.isArray(licenses)) throw new Error('github_file_invalid');
     const existing = licenses.find((license) => license.key === codeRecord.code);
     if (existing) {
-      return { alreadySynced: String(existing.comment || '').includes(`طلب: ${purchaseId}`) };
+      const comment = String(existing.comment || '');
+      return { alreadySynced: comment.includes(`رقم عملية XPay: ${xpaySessionId}`) || comment.includes(`رقم الطلب: ${xpaySessionId}`) };
     }
 
     licenses.push({
       key: codeRecord.code,
+      enabled: 'yes',
       ...(details.durationDays ? { durationDays: details.durationDays } : {}),
       ...(details.durationWeeks ? { durationWeeks: details.durationWeeks } : {}),
       ...(details.durationMonths ? { durationMonths: details.durationMonths } : {}),
       ...(details.durationYears ? { durationYears: details.durationYears } : {}),
-      comment: `الاسم: ${codeRecord.customer_name} | الإيميل: ${codeRecord.customer_email} | طلب: ${purchaseId}`
+      comment: `الاسم: ${codeRecord.customer_name}\nالإيميل: ${codeRecord.customer_email}\nرقم عملية XPay: ${xpaySessionId}`
     });
     const write = await fetch(url, {
       method: 'PUT',
@@ -224,7 +226,7 @@ async function claimCode(request, env, origin) {
 
   const tokenHash = await sha256(token);
   const purchase = await env.DB.prepare(
-    'SELECT id, plan, code_id FROM purchases WHERE redemption_token_hash = ?'
+    'SELECT id, plan, code_id, provider_payment_id FROM purchases WHERE redemption_token_hash = ?'
   ).bind(tokenHash).first();
   if (!purchase) return json({ error: 'invalid_or_expired_link' }, 404, origin);
   if (purchase.code_id) return json({ error: 'code_already_shown' }, 409, origin);
@@ -257,7 +259,7 @@ async function claimCode(request, env, origin) {
     if (!codeRecord.license_synced_at) {
       let synced = false;
       for (let attempt = 0; attempt < 5 && !synced; attempt += 1) {
-        const result = await syncLicenseToGitHub(codeRecord, purchase.plan, purchase.id, env);
+        const result = await syncLicenseToGitHub(codeRecord, purchase.plan, purchase.provider_payment_id, env);
         if (result.alreadySynced) {
           synced = true;
           break;
