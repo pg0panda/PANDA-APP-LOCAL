@@ -1,0 +1,9 @@
+name = "panda-code-service"
+main = "src/index.js"
+compatibility_date = "2026-08-25"
+
+# Create the database first, then replace this value with its real ID.
+[[d1_databases]]
+binding = "DB"
+database_name = "panda-codes"
+database_id = "f4bea3dc-8c6a-4d30-ba1e-e9fe008b4062"
