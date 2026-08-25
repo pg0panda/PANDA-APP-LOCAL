@@ -1,4 +1,4 @@
-const apiUrl = 'https://REPLACE_WITH_YOUR_WORKER.workers.dev/api/claim';
+const apiUrl = 'https://panda-code-service.mohamednasr9040.workers.dev/api/claim';
 
 const messages = {
   invalid_or_expired_link: 'رابط استلام الكود غير صالح أو انتهت صلاحيته.',
