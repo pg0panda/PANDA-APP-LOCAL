@@ -16,6 +16,9 @@ CREATE TABLE IF NOT EXISTS purchases (
   provider_payment_id TEXT NOT NULL UNIQUE,
   plan TEXT NOT NULL CHECK (plan IN ('day', 'week', 'month', '3months', '6months', 'year')),
   redemption_token_hash TEXT NOT NULL UNIQUE,
+  -- Kept only in D1 (never exposed through the public claim API) so the
+  -- post-payment return endpoint can send the buyer to their one-time link.
+  redemption_token TEXT NOT NULL,
   code_id INTEGER UNIQUE REFERENCES codes(id),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   claimed_at TEXT
