@@ -8,3 +8,9 @@ code { display: block; margin: 24px 0 14px; padding: 16px; overflow-wrap: anywhe
 button { border: 0; border-radius: 10px; padding: 12px 24px; background: #45d987; color: #052012; font-weight: 700; cursor: pointer; }
 button:disabled { background: #496356; color: #c6d2cb; cursor: not-allowed; }
 [data-status] { min-height: 48px; }
+form { margin: 24px 0; text-align: right; }
+label { display: block; margin: 13px 0 6px; color: #d8e6dd; font-weight: 600; }
+input[type="text"], input[type="email"] { width: 100%; padding: 12px; border: 1px solid #3f6553; border-radius: 9px; background: #06100b; color: #fff; font: inherit; }
+.consent { display: flex; align-items: start; gap: 8px; font-size: 13px; font-weight: 400; color: #b8c8bf; line-height: 1.5; }
+.consent input { margin-top: 4px; }
+form button { width: 100%; margin-top: 8px; }

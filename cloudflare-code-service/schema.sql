@@ -5,12 +5,16 @@ CREATE TABLE IF NOT EXISTS codes (
   plan TEXT NOT NULL CHECK (plan IN ('day', 'week', 'month', '3months', '6months', 'year')),
   claimed_at TEXT,
   claimed_purchase_id INTEGER UNIQUE,
+  customer_name TEXT,
+  customer_email TEXT,
+  license_synced_at TEXT,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_codes_available ON codes(plan, claimed_at, id);
 
--- A payment creates exactly one redemption token. Only its SHA-256 hash is stored.
+-- A payment creates exactly one redemption token. Its hash validates claims;
+-- the opaque token itself is retained only for the post-payment redirect.
 CREATE TABLE IF NOT EXISTS purchases (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   provider_payment_id TEXT NOT NULL UNIQUE,

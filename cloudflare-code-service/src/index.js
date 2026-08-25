@@ -5,6 +5,17 @@ const PLAN_BY_AMOUNT = new Map([
   [2500, 'day'], [10000, 'week'], [26000, 'month'],
   [65000, '3months'], [110000, '6months'], [200000, 'year']
 ]);
+const PLAN_LICENSE_DETAILS = {
+  day: { prefix: 'day', durationDays: 1 },
+  week: { prefix: 'week', durationWeeks: 1 },
+  month: { prefix: 'month', durationMonths: 1 },
+  '3months': { prefix: '3m', durationMonths: 3 },
+  '6months': { prefix: '6m', durationMonths: 6 },
+  year: { prefix: 'year', durationYears: 1 }
+};
+const GITHUB_LICENSE_REPO = 'pg0panda/KEYS';
+const GITHUB_LICENSE_BRANCH = 'main';
+const GITHUB_LICENSE_FILE = 'KEYS.json';
 
 const json = (body, status = 200, origin = '') => new Response(JSON.stringify(body), {
   status,
@@ -55,6 +66,67 @@ async function verifyXPaySignature(rawBody, signatureHeader, secret) {
 function secureToken() {
   const bytes = crypto.getRandomValues(new Uint8Array(32));
   return btoa(String.fromCharCode(...bytes)).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '');
+}
+
+function generateLicenseCode(plan, suffixLength = 4) {
+  const details = PLAN_LICENSE_DETAILS[plan];
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const random = crypto.getRandomValues(new Uint8Array(suffixLength));
+  const suffix = [...random].map((value) => alphabet[value % alphabet.length]).join('');
+  return `vip-${details.prefix}-${suffix}`;
+}
+
+function decodeBase64Utf8(value) {
+  return new TextDecoder().decode(Uint8Array.from(atob(value.replaceAll('\n', '')), (char) => char.charCodeAt(0)));
+}
+
+function encodeBase64Utf8(value) {
+  return btoa(String.fromCharCode(...new TextEncoder().encode(value)));
+}
+
+async function syncLicenseToGitHub(codeRecord, plan, purchaseId, env) {
+  if (!env.GITHUB_LICENSE_TOKEN) throw new Error('github_not_configured');
+  const url = `https://api.github.com/repos/${GITHUB_LICENSE_REPO}/contents/${GITHUB_LICENSE_FILE}`;
+  const headers = {
+    accept: 'application/vnd.github+json',
+    authorization: `Bearer ${env.GITHUB_LICENSE_TOKEN}`,
+    'user-agent': 'Panda-Code-Service'
+  };
+  const details = PLAN_LICENSE_DETAILS[plan];
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const read = await fetch(`${url}?ref=${GITHUB_LICENSE_BRANCH}`, { headers });
+    if (!read.ok) throw new Error('github_read_failed');
+    const file = await read.json();
+    const licenses = JSON.parse(decodeBase64Utf8(file.content));
+    if (!Array.isArray(licenses)) throw new Error('github_file_invalid');
+    const existing = licenses.find((license) => license.key === codeRecord.code);
+    if (existing) {
+      return { alreadySynced: String(existing.comment || '').includes(`طلب: ${purchaseId}`) };
+    }
+
+    licenses.push({
+      key: codeRecord.code,
+      ...(details.durationDays ? { durationDays: details.durationDays } : {}),
+      ...(details.durationWeeks ? { durationWeeks: details.durationWeeks } : {}),
+      ...(details.durationMonths ? { durationMonths: details.durationMonths } : {}),
+      ...(details.durationYears ? { durationYears: details.durationYears } : {}),
+      comment: `الاسم: ${codeRecord.customer_name} | الإيميل: ${codeRecord.customer_email} | طلب: ${purchaseId}`
+    });
+    const write = await fetch(url, {
+      method: 'PUT',
+      headers: { ...headers, 'content-type': 'application/json' },
+      body: JSON.stringify({
+        message: `Add paid license ${codeRecord.code}`,
+        content: encodeBase64Utf8(JSON.stringify(licenses, null, 2)),
+        sha: file.sha,
+        branch: GITHUB_LICENSE_BRANCH
+      })
+    });
+    if (write.ok) return { alreadySynced: true };
+    if (write.status !== 409 && write.status !== 422) throw new Error('github_write_failed');
+  }
+  throw new Error('github_write_conflict');
 }
 
 async function createPurchase(request, env, origin) {
@@ -142,38 +214,74 @@ async function xpayReturn(url, env) {
 async function claimCode(request, env, origin) {
   if (!origin) return json({ error: 'origin_not_allowed' }, 403);
   const body = await request.json().catch(() => null);
-  const token = body && body.token;
+  const { token, name, email, consent } = body || {};
   if (!token || typeof token !== 'string' || token.length > 200) return json({ error: 'invalid_token' }, 400, origin);
+  const customerName = typeof name === 'string' ? name.trim().replace(/\s+/g, ' ') : '';
+  const customerEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+  if (customerName.length < 2 || customerName.length > 100 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail) || customerEmail.length > 254 || consent !== true) {
+    return json({ error: 'invalid_customer_details' }, 400, origin);
+  }
 
   const tokenHash = await sha256(token);
-  // D1 batch is atomic: a code can never be assigned to two payments.
   const purchase = await env.DB.prepare(
     'SELECT id, plan, code_id FROM purchases WHERE redemption_token_hash = ?'
   ).bind(tokenHash).first();
   if (!purchase) return json({ error: 'invalid_or_expired_link' }, 404, origin);
   if (purchase.code_id) return json({ error: 'code_already_shown' }, 409, origin);
 
-  const candidate = await env.DB.prepare(
-    'SELECT id, code FROM codes WHERE plan = ? AND claimed_at IS NULL ORDER BY id LIMIT 1'
-  ).bind(purchase.plan).first();
-  if (!candidate) return json({ error: 'codes_unavailable' }, 503, origin);
-
   const now = new Date().toISOString();
-  const result = await env.DB.batch([
-    env.DB.prepare('UPDATE codes SET claimed_at = ?, claimed_purchase_id = ? WHERE id = ? AND claimed_at IS NULL')
-      .bind(now, purchase.id, candidate.id),
-    // This second predicate prevents a losing concurrent request from linking
-    // its purchase to a code that the other request has just claimed.
-    env.DB.prepare(`UPDATE purchases SET code_id = ?, claimed_at = ?
-      WHERE id = ? AND code_id IS NULL
-      AND EXISTS (SELECT 1 FROM codes WHERE id = ? AND claimed_purchase_id = ?)`)
-      .bind(candidate.id, now, purchase.id, candidate.id, purchase.id)
-  ]);
-  if (result[0].meta.changes !== 1 || result[1].meta.changes !== 1) {
-    return json({ error: 'claim_conflict_retry' }, 409, origin);
+  let codeRecord = await env.DB.prepare(
+    'SELECT id, code, customer_name, customer_email, license_synced_at FROM codes WHERE claimed_purchase_id = ?'
+  ).bind(purchase.id).first();
+
+  if (!codeRecord) {
+    for (let attempt = 0; attempt < 5 && !codeRecord; attempt += 1) {
+      const code = generateLicenseCode(purchase.plan, 4 + attempt);
+      try {
+        const inserted = await env.DB.prepare(`INSERT INTO codes
+          (code, plan, claimed_at, claimed_purchase_id, customer_name, customer_email)
+          VALUES (?, ?, ?, ?, ?, ?)`)
+          .bind(code, purchase.plan, now, purchase.id, customerName, customerEmail).run();
+        codeRecord = { id: inserted.meta.last_row_id, code, customer_name: customerName, customer_email: customerEmail, license_synced_at: null };
+      } catch (error) {
+        if (!String(error.message).includes('UNIQUE')) throw error;
+        codeRecord = await env.DB.prepare(
+          'SELECT id, code, customer_name, customer_email, license_synced_at FROM codes WHERE claimed_purchase_id = ?'
+        ).bind(purchase.id).first();
+      }
+    }
+  }
+  if (!codeRecord) return json({ error: 'code_generation_failed' }, 503, origin);
+
+  try {
+    if (!codeRecord.license_synced_at) {
+      let synced = false;
+      for (let attempt = 0; attempt < 5 && !synced; attempt += 1) {
+        const result = await syncLicenseToGitHub(codeRecord, purchase.plan, purchase.id, env);
+        if (result.alreadySynced) {
+          synced = true;
+          break;
+        }
+        // A legacy key had the same short suffix. Replace it before retrying;
+        // D1's UNIQUE constraint also prevents duplicates among generated keys.
+        const replacement = generateLicenseCode(purchase.plan, 5 + attempt);
+        await env.DB.prepare('UPDATE codes SET code = ? WHERE id = ? AND license_synced_at IS NULL')
+          .bind(replacement, codeRecord.id).run();
+        codeRecord.code = replacement;
+      }
+      if (!synced) throw new Error('code_generation_failed');
+      await env.DB.prepare('UPDATE codes SET license_synced_at = ? WHERE id = ?').bind(new Date().toISOString(), codeRecord.id).run();
+    }
+  } catch (error) {
+    console.error('GitHub license sync error', error);
+    return json({ error: error.message === 'github_not_configured' ? 'license_service_not_configured' : 'license_sync_failed' }, 502, origin);
   }
 
-  return json({ code: candidate.code, plan: purchase.plan }, 200, origin);
+  const result = await env.DB.prepare('UPDATE purchases SET code_id = ?, claimed_at = ? WHERE id = ? AND code_id IS NULL')
+    .bind(codeRecord.id, new Date().toISOString(), purchase.id).run();
+  if (result.meta.changes !== 1) return json({ error: 'code_already_shown' }, 409, origin);
+
+  return json({ code: codeRecord.code, plan: purchase.plan }, 200, origin);
 }
 
 export default {
